@@ -423,7 +423,7 @@ function drawSimpleDelta(current, previous, box, positiveGood = true, size = 24)
   fitText(indicator, box, { size, minSize: 16, weight: 500, color, align: 'center' });
 }
 
-function drawMosBar(withMos, withoutMos, y) {
+function drawMosBar(operatorName, withMos, withoutMos, y) {
   const x = 1042;
   const width = 794;
   const height = 35;
@@ -431,6 +431,15 @@ function drawMosBar(withMos, withoutMos, y) {
   const total = known ? Math.max(0, n(withMos) + n(withoutMos)) : 0;
   const ratio = total ? Math.max(0, Math.min(1, n(withMos) / total)) : 0;
   const fillWidth = Math.max(0, width * ratio);
+
+  // Название оператора над каждой полосой Mos ID.
+  drawText(operatorName, x + width / 2, y - 47, {
+    size: 28,
+    weight: 500,
+    color: COLORS.muted,
+    align: 'center',
+  });
+
   roundedRect(x, y, width, height, 13, COLORS.barBg);
   if (known && fillWidth > 0) {
     ctx.save();
@@ -567,9 +576,9 @@ function drawSlide1(d) {
   drawDeltaPill(d.whooshTrips, d.whooshPrevious, { x: 400, y: 472, w: 269, h: 38 }, { prefix: 'АППН ', unit: ' тыс.', positiveGood: true, size: 21 });
   drawDeltaPill(d.urentTrips, d.urentPrevious, { x: 704, y: 472, w: 269, h: 38 }, { prefix: 'АППН ', unit: ' тыс.', positiveGood: true, size: 21 });
 
-  drawMosBar(d.yandexMos, d.yandexNoMos, 275);
-  drawMosBar(d.whooshMos, d.whooshNoMos, 375);
-  drawMosBar(d.urentMos, d.urentNoMos, 473);
+  drawMosBar('Яндекс', d.yandexMos, d.yandexNoMos, 275);
+  drawMosBar('Whoosh', d.whooshMos, d.whooshNoMos, 375);
+  drawMosBar('Юрент', d.urentMos, d.urentNoMos, 473);
 
   // Маскируем фиксированное число 60 из фонового шаблона и рисуем редактируемое значение.
   ctx.fillStyle = COLORS.white;
