@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <title>Редактор отчёта по СИМ</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <header class="topbar">
+      <h1>Редактор отчёта по СИМ</h1>
+      <a
+        class="presentation-link"
+        href="https://docs.google.com/presentation/d/1W4C2yVba8txza43UPpQvBOrfkJz47MyMQHVvbIUBOl8/edit?slide=id.p#slide=id.p"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v5h5"/><rect x="8.5" y="10" width="7" height="6" rx="1"/></svg>
+        Открыть презентацию
+      </a>
+    </header>
+
+    <section class="action-toolbar" aria-label="Действия с отчётом">
+      <div class="action-group">
+        <span class="action-group__label">Google Slides</span>
+        <div class="action-group__buttons">
+          <button class="button button--google" id="google-slide">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            <span id="google-slide-label">Обновить слайд 1</span>
+          </button>
+          <button class="button button--google-light" id="google-all">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+            Обновить все 3 слайда
+          </button>
+        </div>
+      </div>
+
+      <div class="action-toolbar__divider" aria-hidden="true"></div>
+
+      <div class="action-group">
+        <span class="action-group__label">Экспорт PNG</span>
+        <div class="action-group__buttons">
+          <button class="button button--dark" id="download-slide">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v12M7.5 10.5 12 15l4.5-4.5M5 20h14"/></svg>
+            <span id="download-slide-label">Скачать слайд 1</span>
+          </button>
+          <button class="button button--light" id="download-all">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7 3h10v5H7zM5 10h14v5H5zM3 17h18v4H3z"/></svg>
+            Скачать все 3 PNG
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <nav class="slide-tabs" aria-label="Слайды">
+      <button class="slide-tab is-active" data-slide-id="1">1. Основные показатели</button>
+      <button class="slide-tab" data-slide-id="2">2. Аварийность</button>
+      <button class="slide-tab" data-slide-id="3">3. Суды</button>
+    </nav>
+
+    <main class="workspace">
+      <section class="preview-card">
+        <div class="preview-card__header">
+          <div>
+            <strong id="slide-title">Основные показатели</strong>
+            <span>1920 × 1080 px · нажмите на значение в превью, чтобы изменить его</span>
+          </div>
+          <div class="preview-card__actions">
+            <button class="button button--small" id="reset-slide">Очистить слайд</button>
+          </div>
+        </div>
+        <div class="canvas-wrap">
+          <canvas id="report-canvas" width="1920" height="1080" aria-label="Превью слайда"></canvas>
+          <div class="canvas-loading" id="canvas-loading">Загрузка макета…</div>
+        </div>
+      </section>
+
+      <aside class="editor-panel">
+        <div class="editor-panel__header">
+          <div>
+            <h2 id="editor-title">Данные слайда 1</h2>
+            <p>Все изменения сразу отображаются в превью.</p>
+          </div>
+        </div>
+        <div id="editor-form" class="editor-form"></div>
+      </aside>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="./app.js" defer></script>
+</body>
+</html>
