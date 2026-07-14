@@ -423,7 +423,7 @@ function drawSimpleDelta(current, previous, box, positiveGood = true, size = 24)
   fitText(indicator, box, { size, minSize: 16, weight: 500, color, align: 'center' });
 }
 
-function drawMosBar(withMos, withoutMos, y) {
+function drawMosBar(operatorName, withMos, withoutMos, y) {
   const x = 1042;
   const width = 794;
   const height = 35;
@@ -431,6 +431,7 @@ function drawMosBar(withMos, withoutMos, y) {
   const total = known ? Math.max(0, n(withMos) + n(withoutMos)) : 0;
   const ratio = total ? Math.max(0, Math.min(1, n(withMos) / total)) : 0;
   const fillWidth = Math.max(0, width * ratio);
+
   roundedRect(x, y, width, height, 13, COLORS.barBg);
   if (known && fillWidth > 0) {
     ctx.save();
@@ -470,9 +471,20 @@ function drawQuotaRow(y, values) {
   });
 }
 
+function violationNoun(value) {
+  if (!hasValue(value)) return 'нарушений';
+  const number = Math.abs(Math.trunc(n(value)));
+  const lastTwo = number % 100;
+  const last = number % 10;
+  if (lastTwo >= 11 && lastTwo <= 14) return 'нарушений';
+  if (last === 1) return 'нарушение';
+  if (last >= 2 && last <= 4) return 'нарушения';
+  return 'нарушений';
+}
+
 function drawViolationsCell(value, x, y, totalRow = false) {
   drawText(fmt(value, 0), x, y, { size: totalRow ? 30 : 34, weight: 500, color: COLORS.ink, align: 'center' });
-  drawText('нарушений', x, y + 29, { size: totalRow ? 17 : 18, weight: 500, color: totalRow ? COLORS.ink : '#8490a3', align: 'center' });
+  drawText(violationNoun(value), x, y + 29, { size: totalRow ? 17 : 18, weight: 500, color: totalRow ? COLORS.ink : '#8490a3', align: 'center' });
 }
 
 function drawChart(values, months, area, keyPrefix) {
@@ -567,9 +579,23 @@ function drawSlide1(d) {
   drawDeltaPill(d.whooshTrips, d.whooshPrevious, { x: 400, y: 472, w: 269, h: 38 }, { prefix: 'АППН ', unit: ' тыс.', positiveGood: true, size: 21 });
   drawDeltaPill(d.urentTrips, d.urentPrevious, { x: 704, y: 472, w: 269, h: 38 }, { prefix: 'АППН ', unit: ' тыс.', positiveGood: true, size: 21 });
 
-  drawMosBar(d.yandexMos, d.yandexNoMos, 275);
-  drawMosBar(d.whooshMos, d.whooshNoMos, 375);
-  drawMosBar(d.urentMos, d.urentNoMos, 473);
+  drawMosBar('Яндекс', d.yandexMos, d.yandexNoMos, 275);
+  drawMosBar('Whoosh', d.whooshMos, d.whooshNoMos, 375);
+  drawMosBar('Юрент', d.urentMos, d.urentNoMos, 473);
+
+  // Названия операторов рисуются последними, чтобы их не перекрывали полосы и подписи.
+  [
+    ['Яндекс', 255],
+    ['Whoosh', 355],
+    ['Юрент', 453],
+  ].forEach(([name, y]) => {
+    drawText(name, 1439, y, {
+      size: 30,
+      weight: 500,
+      color: COLORS.muted,
+      align: 'center',
+    });
+  });
 
   // Маскируем фиксированное число 60 из фонового шаблона и рисуем редактируемое значение.
   ctx.fillStyle = COLORS.white;
@@ -625,7 +651,7 @@ function drawSlide2(d) {
   const deltaDown = !deltaUnknown && accidentDelta < -0.0001;
   const deltaText = deltaUnknown ? 'Х%' : deltaUp ? `▲ ${compactPercent(accidentDelta)}%` : deltaDown ? `▼ ${compactPercent(accidentDelta)}%` : '• 0%';
   const deltaColor = COLORS.muted;
-  fitText(deltaText, { x: 365, y: 220, w: 260, h: 90 }, { size: 47, minSize: 26, weight: 700, color: deltaColor });
+  fitText(deltaText, { x: 365, y: 229, w: 260, h: 90 }, { size: 47, minSize: 26, weight: 700, color: deltaColor });
   fitText(`АППН (${d.previousPeriod})`, { x: 370, y: 352, w: 250, h: 28 }, { size: 20, minSize: 14, weight: 500, color: '#8a94a6' });
   fitText(`${fmt(d.previousAccidents, 0)} ДТП`, { x: 397, y: 383, w: 195, h: 39 }, { size: 24, minSize: 17, weight: 500, color: '#657187' });
 
@@ -653,9 +679,9 @@ function drawSlide2(d) {
   fitText(`АППН (${d.previousPeriod}) – ${fmt(d.previousRate, 2)} ДТП`, { x: 90, y: 791, w: 438, h: 31 }, { size: 22, minSize: 15, weight: 500, color: '#778398' });
 
   const rateCols = [
-    { value: d.yandexRate, prev: d.yandexPreviousRate, x: 169, prevX: 158 },
-    { value: d.whooshRate, prev: d.whooshPreviousRate, x: 358, prevX: 348 },
-    { value: d.urentRate, prev: d.urentPreviousRate, x: 548, prevX: 538 },
+    { value: d.yandexRate, prev: d.yandexPreviousRate, x: 182, prevX: 171 },
+    { value: d.whooshRate, prev: d.whooshPreviousRate, x: 371, prevX: 361 },
+    { value: d.urentRate, prev: d.urentPreviousRate, x: 561, prevX: 551 },
   ];
   rateCols.forEach(item => {
     drawText(fmt(item.value, 2), item.x, 866, { size: 31, weight: 500, color: COLORS.muted, align: 'center' });
@@ -684,8 +710,8 @@ function drawSlide2(d) {
   drawViolationsCell(totals[2], colX[2], 635, true);
   drawViolationsCell(sumOrBlank(...totals), colX[3], 635, true);
 
-  drawRaidMetric(d.raidsSeason, { x: 684, y: 782, w: 265, h: 88 }, COLORS.muted);
-  drawRaidMetric(d.raidsPeriod, { x: 968, y: 782, w: 265, h: 88 }, COLORS.ink);
+  drawRaidMetric(d.raidsSeason, { x: 684, y: 790, w: 265, h: 88 }, COLORS.muted);
+  drawRaidMetric(d.raidsPeriod, { x: 968, y: 790, w: 265, h: 88 }, COLORS.ink);
   drawText(`${fmt(d.blockedTotal, 0)} (+${fmt(d.blockedAdded, 0)})`, 1269, 846, { size: 39, weight: 500, color: COLORS.muted });
   drawText(`${fmt(d.finesTotal, 0)} (+${fmt(d.finesAdded, 0)})`, 1269, 947, { size: 39, weight: 500, color: COLORS.muted });
 }
